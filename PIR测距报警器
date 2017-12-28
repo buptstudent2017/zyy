@@ -1,0 +1,77 @@
+int Sensor = 8; //接收传感器的信号
+int LED =5;
+int buzzer =12;
+const int TrigPin = 2; //发送超声波
+const int EchoPin = 3; //接收超声波
+float cm;
+void setup()
+
+{
+
+  Serial.begin(115200);
+  Serial.println("Initialisation complete.");
+  pinMode(LED,OUTPUT);
+  pinMode(buzzer,OUTPUT);
+  pinMode(Sensor, INPUT); // 设置为输入
+  pinMode(TrigPin, OUTPUT);
+  pinMode(EchoPin, INPUT);
+
+}
+
+void loop()
+
+{
+  unsigned char i,j;
+  int val = digitalRead(Sensor); // 读取引脚电平
+
+  if (val==1)  // 若检测到有人，则val值为1
+      { 
+        int sum=0;
+      
+      digitalWrite(LED,HIGH);
+      delay(200);
+      digitalWrite(LED,LOW);
+      delay(200);
+      digitalWrite(buzzer,HIGH);
+       Serial.println("who's there?");
+       for(int i=0;i<3;i++)
+       {
+       // 产生一个10us的高电平脉冲去触发TrigPin
+    digitalWrite(TrigPin, LOW);
+    delayMicroseconds(2);
+    digitalWrite(TrigPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TrigPin, LOW);
+
+    // 检测脉冲宽度，并计算出距离
+cm = pulseIn(EchoPin, HIGH) / 58.0;
+    //通过串口监视器输出
+    sum=sum+cm;
+    delay(100);
+       }
+    Serial.print("Distance:");
+    Serial.println(sum/3.0);
+   
+       for(i=0;i<150;i++)
+  {
+    digitalWrite(buzzer,HIGH);
+    delay(1);
+    digitalWrite(buzzer,LOW);
+    delay(1);
+  }
+  for(j=0;j<200;j++)
+  {
+    digitalWrite(buzzer,HIGH);
+    delay(2);
+    digitalWrite(buzzer,LOW);
+    delay(2);}
+      }
+      
+  else
+      { digitalWrite(LED,LOW);
+       digitalWrite(buzzer,LOW);
+      Serial.println("emmmm,sleep");}
+
+  delay(100);
+
+}
